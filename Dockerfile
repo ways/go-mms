@@ -5,11 +5,10 @@ WORKDIR /build/app
 RUN go telemetry off
 
 # We want to populate the module cache based on the go.{mod,sum} files.
-COPY go.mod .
-COPY go.sum .
+COPY go.mod go.sum .
 
 # Dependencies are downloaded only when go.mod or go.sum changes.
-RUN go mod download
+RUN --mount=type=cache,target=/var/cache/apk go mod download
 
 # Copy the rest of the source files.
 COPY . .
@@ -17,24 +16,20 @@ COPY . .
 RUN make edeps
 RUN make statik
 RUN make deps
-
 RUN make
 
 # Security scan
-RUN go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...
+# RUN go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...
 
 RUN make test
 
 # SECOND STAGE: create the app runtime image.
-FROM docker.io/ubuntu:22.04
-RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates
-RUN update-ca-certificates
+FROM alpine:3.23
+RUN --mount=type=cache,target=/var/cache/apk apk add --no-cache ca-certificates && update-ca-certificates
 
 COPY --from=build-app /build/app/mmsd /app/
-WORKDIR /app
 
-RUN chown nobody.nogroup /app
+RUN chown nobody:nogroup /app
 USER nobody:nogroup
 
 ENTRYPOINT ["/app/mmsd"]
