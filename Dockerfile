@@ -1,5 +1,5 @@
 # FIRST STAGE:  build the app.
-FROM golang:1.25 AS build-app
+FROM docker.io/library/golang:1.25 AS build-app
 WORKDIR /build/app
 
 # We want to populate the module cache based on the go.{mod,sum} files.
