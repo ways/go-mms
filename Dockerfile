@@ -1,11 +1,11 @@
 ARG alpine_version=3.23
-ARG go_version=1.25-alpine${alpine_version}
+ARG go_version=1.25
 
 # FIRST STAGE:  build the app.
-FROM docker.io/library/golang:${go_version} AS build-app
+FROM docker.io/library/golang:${go_version}-alpine${alpine_version} AS build-app
 WORKDIR /build/app
 
-RUN apk add build-base ca-certificates git
+RUN --mount=type=cache,target=/var/cache/apk apk add build-base ca-certificates git
 
 RUN go telemetry off
 
