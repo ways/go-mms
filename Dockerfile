@@ -20,15 +20,15 @@ RUN --mount=type=cache,target=/root/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     make edeps && \
     make statik && \
-    make deps && \
-    make && \
-    make test
+    make deps
 
 # Security scan
 RUN --mount=type=cache,target=/root/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go install golang.org/x/vuln/cmd/govulncheck@latest && \
-    govulncheck ./...
+    govulncheck ./... && \
+    make && \
+    make test
 
 
 # SECOND STAGE: create the app runtime image.
