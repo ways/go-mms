@@ -1,5 +1,8 @@
+ARG alpine_version=3.23
+ARG go_version=1.25
+
 # FIRST STAGE:  build the app.
-FROM docker.io/library/golang:1.25 AS build-app
+FROM docker.io/library/golang:${go_version} AS build-app
 WORKDIR /build/app
 
 RUN go telemetry off
@@ -32,7 +35,7 @@ RUN --mount=type=cache,target=/root/go/pkg/mod \
 
 
 # SECOND STAGE: create the app runtime image.
-FROM alpine:3.23
+FROM alpine:${alpine_version}
 RUN --mount=type=cache,target=/var/cache/apk apk add --no-cache ca-certificates && update-ca-certificates
 
 COPY --from=build-app /build/app/mmsd /app/
