@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/var/cache/apk apk add build-base ca-certificates 
 RUN go telemetry off
 
 # We want to populate the module cache based on the go.{mod,sum} files.
-COPY go.mod go.sum .
+COPY go.mod go.sum ./
 
 # Dependencies are downloaded only when go.mod or go.sum changes.
 RUN --mount=type=cache,target=/root/go/pkg/mod \
