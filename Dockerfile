@@ -8,20 +8,24 @@ RUN go telemetry off
 COPY go.mod go.sum .
 
 # Dependencies are downloaded only when go.mod or go.sum changes.
-RUN --mount=type=cache,target=/var/cache/apk go mod download
+RUN --mount=type=cache,target=/root/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go mod download
 
 # Copy the rest of the source files.
 COPY . .
 
-RUN make edeps
-RUN make statik
-RUN make deps
-RUN make
+RUN --mount=type=cache,target=/root/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    make edeps && make statik && make deps && make
 
-# Security scan
-# RUN go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...
-
+# Security scan disabled until security issues are fixed.
+RUN --mount=type=cache,target=/root/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go install golang.org/x/vuln/cmd/govulncheck@latest && \
+    govulncheck ./... || true
 RUN make test
+
 
 # SECOND STAGE: create the app runtime image.
 FROM alpine:3.23
