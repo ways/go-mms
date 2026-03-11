@@ -38,7 +38,7 @@ RUN --mount=type=cache,target=/root/go/pkg/mod \
 
 # SECOND STAGE: create the app runtime image.
 FROM alpine:${alpine_version}
-RUN --mount=type=cache,target=/var/cache/apk apk add --no-cache ca-certificates && update-ca-certificates
+RUN --mount=type=cache,target=/var/cache/apk apk add ca-certificates && update-ca-certificates
 
 COPY --from=build-app /build/app/mmsd /app/
 
