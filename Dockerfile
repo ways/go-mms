@@ -23,8 +23,8 @@ RUN --mount=type=cache,target=/root/go/pkg/mod \
 RUN --mount=type=cache,target=/root/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go install golang.org/x/vuln/cmd/govulncheck@latest && \
-    govulncheck ./... || true
-RUN make test
+    govulncheck ./... && \
+    make test
 
 
 # SECOND STAGE: create the app runtime image.
