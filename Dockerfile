@@ -45,4 +45,5 @@ COPY --from=build-app /build/app/mmsd /app/
 RUN chown nobody:nogroup /app
 USER nobody:nogroup
 
-ENTRYPOINT ["/app/mmsd"]
+# Bind not only to localhost, so the app can be accessed from outside the container.
+ENTRYPOINT ["/app/mmsd", "--hostname", "0.0.0.0"]
