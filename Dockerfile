@@ -38,12 +38,15 @@ RUN --mount=type=cache,target=/root/go/pkg/mod \
 
 # SECOND STAGE: create the app runtime image.
 FROM alpine:${alpine_version}
-RUN --mount=type=cache,target=/var/cache/apk apk add ca-certificates && update-ca-certificates
+RUN --mount=type=cache,target=/var/cache/apk apk add ca-certificates curl && update-ca-certificates
 
 COPY --from=build-app /build/app/mmsd /app/
 
 RUN chown nobody:nogroup /app
 USER nobody:nogroup
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl --silent -fail http://localhost:8080/api/v1/healthz || exit 1
 
 # Bind not only to localhost, so the app can be accessed from outside the container.
 ENTRYPOINT ["/app/mmsd", "--hostname", "0.0.0.0"]
