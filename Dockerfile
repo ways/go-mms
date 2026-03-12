@@ -37,4 +37,4 @@ WORKDIR /app
 RUN chown nobody.nogroup /app
 USER nobody:nogroup
 
-ENTRYPOINT ["/app/mmsd"]
+ENTRYPOINT ["/app/mmsd", "--hostname", "0.0.0.0"]
