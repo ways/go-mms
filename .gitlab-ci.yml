@@ -31,7 +31,7 @@ build container:
 trivy_docker:
   stage: scanimage
   tags:
-    - teampunkt
+    - k8s-root
   image:
     name: docker.io/aquasec/trivy
     entrypoint: [""]
@@ -47,7 +47,7 @@ trivy_docker:
 .container_scanning:
   stage: scanimage
   tags:
-    - teampunkt
+    - k8s-root
   image:
     name: docker.io/aquasec/trivy
     entrypoint: [""]
